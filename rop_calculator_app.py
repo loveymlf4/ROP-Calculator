@@ -31,6 +31,8 @@ service_levels = {
 if uploaded_file:
     df = pd.read_excel(uploaded_file)
     st.success("✅ File loaded successfully!")
+    st.info("ℹ️ Processing might take a while depending on how many items are in your file. Please be patient ⏳")
+
 
     required_cols = ['calendar_date', 'item_number', 'quantity']
     if not all(col in df.columns for col in required_cols):
