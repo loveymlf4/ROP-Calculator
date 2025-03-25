@@ -1,55 +1,76 @@
-📦 Reorder Point (ROP) Calculator – Overview
-This tool helps inventory planners calculate Reorder Points (ROP) for items using bootstrap simulation, particularly useful when dealing with lumpy or intermittent demand.
+# 📦 Reorder Point (ROP) Calculator
 
-🎯 Purpose
-Designed to assist in setting ROPs using historical demand data provided in Excel, this app:
+## 🧭 Overview
+This tool helps inventory planners calculate Reorder Points (ROP) using historical transaction data and bootstrap simulation. It's especially useful for **lumpy** or **intermittent** demand patterns where traditional statistical methods may fail.
 
-Calculates ROPs per item
+## 🚀 How to Use
 
-Classifies items using ABC analysis
+### 1. Upload Your Excel File
+- The file **must contain** the following columns:
+  - `calendar_date`
+  - `item_number`
+  - `quantity`
+- Optionally, include `branch_number` if you're analyzing data by branch.
+- File size must be **under 200MB** (Streamlit's upload limit).
 
-Flags items that lack sufficient demand data and require human review
+### 2. Configure Parameters (in the sidebar)
+- Lead time in working days
+- Working days per week
+- Bootstrap sample size
+- ABC service levels
 
-🧠 Core Logic
-✅ Qualified Items
-An item is considered "Qualified" for ROP calculation if:
+### 3. Click **"Run"** (or the app runs automatically after upload)
+- Results will be shown in the app and available to download as an Excel file with two sheets:
+  - `ROP Results`: items that qualify for ROP calculation
+  - `Needs Review`: items that don’t meet minimum data requirements
 
-Average monthly demand is ≥ 0.5 units
+---
 
-Transaction count (distinct days with sales) is ≥ 10
+## 🧠 Core Logic
 
-These criteria ensure we don’t blindly calculate reorder points for items that barely move or only sold a couple times by chance.
+### ✅ Qualified Items
+An item is considered **"Qualified"** for ROP calculation if:
+- Average monthly demand is **≥ 0.5 units**
+- Total number of transactions (distinct days with sales) is **≥ 10**
 
-❌ Human Review Needed
-Items that don’t meet either criterion are tagged as “Human check needed”. Why?
+Items that don't meet these criteria are flagged for **manual review** in the `Needs Review` sheet.
 
-Because trying to generate a reorder point for extremely low-demand or one-off items can lead to:
+---
 
-Overordering dead stock
+### 🔢 ABC Classification
+Among qualified items:
+- Items are sorted by total quantity sold.
+- Classification:
+  - **A**: Top 80% of cumulative volume
+  - **B**: Next 15%
+  - **C**: Remaining 5%
 
-False confidence in simulation-based ROPs
+### 🎯 Service Levels (default settings)
+- A items: 95%
+- B items: 85%
+- C items: 75%
 
-Misuse of working capital
+You can adjust these in the sidebar.
 
-Instead, these items are flagged for manual consideration (e.g. phase-out, special order only, or seasonal handling).
+---
 
-📊 How It Works
-Upload a file with calendar_date, item_number, and quantity
+### 📈 ROP Calculation via Bootstrap
+- Weekly demand is resampled from historical data.
+- For each sample, demand during lead time is simulated.
+- The final ROP is the **percentile** based on your service level.
+- If demand is lumpy and bootstrap result is unusually low, a **mode override** is applied to avoid understocking.
 
-Optionally provide branch_number
+---
 
-Adjust sliders for:
+## ⚠️ Performance Notice
+Depending on the number of items and data history, this app may take **up to several minutes** to run — especially on large files or less powerful machines.
 
-Lead time
+---
 
-Working days per week
+## 👨‍💻 Author
+Yi Han | Made with 💪 and 🍵
 
-Service levels by ABC class
+---
 
-Click Run to simulate ROPs using bootstrap for qualified items
-
-Download the result:
-
-Sheet 1: ROP results for qualified items
-
-Sheet 2: Items requiring human review
+## 📜 License
+MIT License
